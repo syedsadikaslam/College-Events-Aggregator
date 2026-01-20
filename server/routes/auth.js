@@ -110,11 +110,11 @@ router.get('/google', passport.authenticate('google', { scope: ['profile', 'emai
 
 // @route   GET /api/auth/google/callback
 router.get('/google/callback',
-    passport.authenticate('google', { failureRedirect: 'http://localhost:5173/login', session: false }),
+    passport.authenticate('google', { failureRedirect: 'https://internxbysadik.vercel.app/login', session: false }),
     (req, res) => {
         const token = generateToken(req.user._id, req.user.role);
         // Redirecting to frontend auth-success handler
-        res.redirect(`http://localhost:5173/auth-success?token=${token}`);
+        res.redirect(`https://internxbysadik.vercel.app/auth-success?token=${token}`);
     }
 );
 
