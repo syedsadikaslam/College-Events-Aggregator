@@ -1,7 +1,7 @@
 import { useState, useContext, useEffect } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
-import { LogIn } from 'lucide-react'; // Github icon removed
+import { LogIn } from 'lucide-react'; 
 
 const Login = () => {
     const [formData, setFormData] = useState({ email: '', password: '' });
@@ -37,7 +37,7 @@ const Login = () => {
     };
 
     const handleSocialLogin = (provider) => {
-        window.location.href = `http://localhost:5000/api/auth/${provider}`;
+        window.location.href = `https://internxbysadik.vercel.app/api/auth/${provider}`;
     };
 
     return (
