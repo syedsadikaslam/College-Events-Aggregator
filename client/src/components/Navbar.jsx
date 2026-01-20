@@ -43,7 +43,7 @@ const Navbar = () => {
                 <Rocket size={20} fill="white" />
               </div>
               <span className="text-xl font-extrabold tracking-tight text-gray-900">
-                InternX <span className="text-blue-600 italic">by Sadik</span>
+                InternX 
               </span>
             </Link>
           </div>
