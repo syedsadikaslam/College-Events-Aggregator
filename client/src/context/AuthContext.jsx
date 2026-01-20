@@ -13,7 +13,7 @@ export const AuthProvider = ({ children }) => {
         if (!currentToken) return setLoading(false);
         
         try {
-            const res = await axios.get('http://localhost:5000/api/users/me', {
+            const res = await axios.get('https://internxbysadik.vercel.app/api/users/me', {
                 headers: { Authorization: `Bearer ${currentToken}` }
             });
             setUser(res.data.data); // Backend se user data set karein
@@ -44,7 +44,7 @@ export const AuthProvider = ({ children }) => {
 
     const login = async (email, password) => {
         try {
-            const res = await axios.post('http://localhost:5000/api/auth/login', { email, password });
+            const res = await axios.post('https://internxbysadik.vercel.app/api/auth/login', { email, password });
             localStorage.setItem('token', res.data.token);
             localStorage.setItem('user', JSON.stringify(res.data));
             setToken(res.data.token);
@@ -57,7 +57,7 @@ export const AuthProvider = ({ children }) => {
 
     const signup = async (name, email, password) => {
         try {
-            const res = await axios.post('http://localhost:5000/api/auth/signup', { name, email, password });
+            const res = await axios.post('https://internxbysadik.vercel.app/api/auth/signup', { name, email, password });
             localStorage.setItem('token', res.data.token);
             localStorage.setItem('user', JSON.stringify(res.data));
             setToken(res.data.token);
