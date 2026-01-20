@@ -110,10 +110,11 @@ router.get('/google', passport.authenticate('google', { scope: ['profile', 'emai
 
 // @route   GET /api/auth/google/callback
 router.get('/google/callback',
+    // UPDATE: Added your vercel link in failureRedirect
     passport.authenticate('google', { failureRedirect: 'https://internxbysadik.vercel.app/login', session: false }),
     (req, res) => {
         const token = generateToken(req.user._id, req.user.role);
-        // Redirecting to frontend auth-success handler
+        // UPDATE: Added your vercel link in success redirect
         res.redirect(`https://internxbysadik.vercel.app/auth-success?token=${token}`);
     }
 );
