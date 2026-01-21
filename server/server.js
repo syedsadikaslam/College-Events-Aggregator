@@ -11,7 +11,10 @@ const PORT = process.env.PORT || 5000;
 // Passport Config load karein
 require('./config/passport');
 
-// 1. Middlewares (Humesha Routes se pehle)
+// 1. Middlewares
+// Render proxy ko trust karne ke liye (OAuth ke liye zaroori)
+app.set('trust proxy', 1);
+
 app.use(cors({ origin: 'https://internxbysadik.vercel.app', credentials: true })); 
 app.use(express.json());
 
@@ -20,7 +23,10 @@ app.use(session({
     secret: process.env.SESSION_SECRET || 'internx_secret_key',
     resave: false,
     saveUninitialized: false,
-    cookie: { secure: false }
+    cookie: { 
+        secure: true, // Render https use karta hai isliye true
+        sameSite: 'none' 
+    }
 }));
 
 // 3. Passport Initialize
@@ -39,11 +45,7 @@ mongoose.connect(process.env.MONGODB_URI)
     .catch(err => console.error('❌ MongoDB connection error:', err));
 
 // --- ROUTES ---
-
-// Auth Routes (Signup, Login, aur Google Auth sab ismein handle hoga)
 app.use('/api/auth', require('./routes/auth')); 
-
-// Baki ke Application Routes
 app.use('/api/events', require('./routes/events'));
 app.use('/api/internships', require('./routes/internships'));
 app.use('/api/applications', require('./routes/applications'));
