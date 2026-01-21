@@ -20,7 +20,7 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
         clientID: process.env.GOOGLE_CLIENT_ID,
         clientSecret: process.env.GOOGLE_CLIENT_SECRET,
         callbackURL: "/api/auth/google/callback",
-        proxy: true // <--- YE SABSE ZAROORI HAI: Render/Vercel ke liye ise true hona chahiye
+        proxy: true // Render/Vercel par HTTPS handle karne ke liye mandatory hai
     }, async (accessToken, refreshToken, profile, done) => {
         try {
             // 1. Google ID se check karein
