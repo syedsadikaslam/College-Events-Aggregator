@@ -33,18 +33,19 @@ router.post("/auto-fetch", async (req, res) => {
     const response = await result.response;
     let text = response.text().trim();
 
-    // --- NEW MULTIPLE OBJECTS FIX ---
-    // Pehla '{' aur uske corresponding pehla '}' dhoondhna
+    // --- STRATEGIC FIX FOR MULTIPLE JSON OBJECTS ---
+    // Hum pehla '{' dhoondhenge
     const startIdx = text.indexOf('{');
     
-    // Logic: Hum pehle object ka end dhoondhenge jo pehle '{' ke baad aata hai
+    // Aur hum pehla '}' dhoondhenge jo pehle '{' ke BAAD aata hai
+    // Yeh logic ensure karta hai ki humein sirf pehla complete object mile
     let endIdx = text.indexOf('}', startIdx);
 
     if (startIdx === -1 || endIdx === -1) {
-        throw new Error("AI response did not contain JSON.");
+        throw new Error("AI response did not contain a valid JSON object.");
     }
 
-    // Extracting just the FIRST object from the response
+    // Sirf pehle object ko slice karna
     let jsonString = text.substring(startIdx, endIdx + 1);
 
     try {
@@ -61,7 +62,7 @@ router.post("/auto-fetch", async (req, res) => {
         });
     } catch (parseError) {
         console.error("Parse Error Details:", jsonString);
-        throw new Error("AI generated bad JSON syntax.");
+        throw new Error("AI generated invalid JSON structure.");
     }
 
   } catch (error) {
