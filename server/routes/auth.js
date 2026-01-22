@@ -86,13 +86,13 @@ router.get('/google', passport.authenticate('google', { scope: ['profile', 'emai
 // Google Auth Callback
 router.get('/google/callback',
     passport.authenticate('google', { 
-        failureRedirect: 'https://internxbysadik.vercel.app/login', 
+        failureRedirect: 'http://localhost:5173/login', 
         session: false 
     }),
     (req, res) => {
         const token = generateToken(req.user._id, req.user.role);
         // Frontend ko token ke saath redirect karein
-        res.redirect(`https://internxbysadik.vercel.app/auth-success?token=${token}`);
+        res.redirect(`http://localhost:5173/auth-success?token=${token}`);
     }
 );
 

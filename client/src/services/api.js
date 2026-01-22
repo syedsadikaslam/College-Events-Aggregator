@@ -1,7 +1,10 @@
 import axios from 'axios';
 
+// Backend URL definition
+const API_URL = 'http://localhost:5000/api';
+
 const api = axios.create({
-    baseURL: 'http://localhost:5000/api',
+    baseURL: API_URL,
 });
 
 // Request Interceptor: Token ko har request ke header mein attach karta hai
@@ -28,20 +31,31 @@ api.interceptors.response.use(
 
 // --- API Functions ---
 
-// Fetching Data
+// 1. Fetching Data
 export const fetchEvents = async () => (await api.get('/events')).data;
 export const fetchInternships = async () => (await api.get('/internships')).data;
 
-// Creating Data
+// 2. Creating Data (Manual)
 export const createEvent = async (data) => (await api.post('/events', data)).data;
 export const createInternship = async (data) => (await api.post('/internships', data)).data;
 
-// Updating Data (Edit)
+// 3. Updating Data (Edit)
 export const updateEvent = async (id, data) => (await api.put(`/events/${id}`, data)).data;
 export const updateInternship = async (id, data) => (await api.put(`/internships/${id}`, data)).data;
 
-// Deleting Data
+// 4. Deleting Data
 export const deleteEvent = async (id) => (await api.delete(`/events/${id}`)).data;
 export const deleteInternship = async (id) => (await api.delete(`/internships/${id}`)).data;
+
+// 5. Gemini AI Auto-Fetch Function (Naya Code)
+export const triggerAutoFetch = async (rawText) => {
+    try {
+        // Hum 'api' (axios) use kar rahe hain taaki auth headers apne aap chale jayein
+        const response = await api.post('/jobs/auto-fetch', { rawText });
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+};
 
 export default api;

@@ -21,6 +21,14 @@ const InternshipSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+     description: {
+        type: String,
+        required: true,
+    },
+     lastDate: {
+        type: String,
+        required: true,
+    },
 }, { timestamps: true });
 
 module.exports = mongoose.model('Internship', InternshipSchema);

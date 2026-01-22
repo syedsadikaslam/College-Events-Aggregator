@@ -2,6 +2,7 @@ import { useContext } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { Briefcase, MapPin, Calendar, ExternalLink, IndianRupee } from 'lucide-react'; // Icons ke liye
 
 const InternshipCard = ({ internship }) => {
     const { user, token } = useContext(AuthContext);
@@ -15,14 +16,11 @@ const InternshipCard = ({ internship }) => {
 
         try {
             const config = {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
+                headers: { Authorization: `Bearer ${token}` }
             };
 
             await axios.post('http://localhost:5000/api/applications', { internshipId: internship._id }, config);
-            alert('Application submitted successfully!');
-            // Redirect or update UI state
+            
             if (internship.applyLink) {
                 window.open(internship.applyLink, '_blank');
             }
@@ -32,32 +30,59 @@ const InternshipCard = ({ internship }) => {
     };
 
     return (
-        <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
-            <div className="p-6">
+        <div className="group relative bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-2xl transition-all duration-500 overflow-hidden flex flex-col h-full">
+            {/* Top Gradient Bar */}
+            <div className="h-2 w-full bg-gradient-to-r from-blue-600 via-purple-500 to-indigo-600"></div>
+
+            <div className="p-6 flex flex-col flex-grow">
+                {/* Header: Role & Company */}
                 <div className="flex justify-between items-start mb-4">
-                    <div>
-                        <h3 className="text-xl font-semibold text-gray-900">{internship.role}</h3>
-                        <p className="text-gray-600 font-medium">{internship.company}</p>
+                    <div className="flex-1">
+                        <h3 className="text-xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors duration-300 leading-tight">
+                            {internship.role}
+                        </h3>
+                        <div className="flex items-center mt-1 text-gray-500">
+                            <Briefcase className="w-4 h-4 mr-1.5" />
+                            <span className="font-medium">{internship.company}</span>
+                        </div>
                     </div>
-                    <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full font-semibold">
-                        {internship.stipend}
-                    </span>
+                    <div className="flex flex-col items-end">
+                        <span className="bg-blue-50 text-blue-700 text-xs px-3 py-1.5 rounded-lg font-bold uppercase tracking-wider shadow-sm border border-blue-100">
+                            {internship.stipend}
+                        </span>
+                    </div>
                 </div>
 
-                <div className="flex items-center text-gray-500 text-sm mb-4">
-                    <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                    </svg>
-                    {internship.location}
+                {/* Badges: Location & Deadline */}
+                <div className="flex flex-wrap gap-3 mb-5">
+                    <div className="flex items-center bg-gray-50 px-3 py-1.5 rounded-full text-gray-600 text-xs font-semibold border border-gray-100">
+                        <MapPin className="w-3.5 h-3.5 mr-1 text-blue-500" />
+                        {internship.location}
+                    </div>
+                    <div className="flex items-center bg-red-50 px-3 py-1.5 rounded-full text-red-600 text-xs font-semibold border border-red-100">
+                        <Calendar className="w-3.5 h-3.5 mr-1" />
+                        Ends: {internship.lastDate || 'Apply Soon'}
+                    </div>
                 </div>
 
-                <button
-                    onClick={handleApply}
-                    className="inline-flex items-center justify-center w-full px-4 py-2 border border-blue-600 text-blue-600 text-sm font-medium rounded-md hover:bg-blue-50 transition-colors"
-                >
-                    Apply Now
-                </button>
+                {/* Body: Detailed Description */}
+                <div className="mb-6 flex-grow">
+                    <h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Job Description</h4>
+                    <p className="text-gray-600 text-sm leading-relaxed line-clamp-3 italic">
+                        "{internship.description || 'No description provided by the recruiter.'}"
+                    </p>
+                </div>
+
+                {/* Footer: Apply Button */}
+                <div className="mt-auto">
+                    <button
+                        onClick={handleApply}
+                        className="relative w-full group overflow-hidden bg-gray-900 text-white px-6 py-3.5 rounded-xl font-bold text-sm transition-all duration-300 hover:bg-blue-600 active:scale-95 flex items-center justify-center gap-2 shadow-lg shadow-gray-200"
+                    >
+                        <span>Apply Now</span>
+                        <ExternalLink className="w-4 h-4 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
+                    </button>
+                </div>
             </div>
         </div>
     );

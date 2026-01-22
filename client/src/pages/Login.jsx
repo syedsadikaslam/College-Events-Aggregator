@@ -37,7 +37,7 @@ const Login = () => {
     };
 
     const handleSocialLogin = (provider) => {
-        window.location.href = `https://internxbysadik.vercel.app/api/auth/${provider}`;
+        window.location.href = `http://localhost:5173/api/auth/${provider}`;
     };
 
     return (

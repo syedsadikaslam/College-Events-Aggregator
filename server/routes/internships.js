@@ -15,12 +15,15 @@ router.get('/', async (req, res) => {
 
 // Create an internship (Admin only)
 router.post('/', protect, authorize('admin'), async (req, res) => {
+    // UPDATED: Added description and lastDate here
     const internship = new Internship({
         role: req.body.role,
         company: req.body.company,
         stipend: req.body.stipend,
         location: req.body.location,
         applyLink: req.body.applyLink,
+        description: req.body.description, // Naya Field
+        lastDate: req.body.lastDate,       // Naya Field
     });
 
     try {
@@ -48,6 +51,8 @@ router.put('/:id', protect, authorize('admin'), async (req, res) => {
         const internship = await Internship.findById(req.params.id);
         if (!internship) return res.status(404).json({ message: 'Internship not found' });
 
+        // Object.assign(internship, req.body) apne aap naye fields (description/lastDate) 
+        // ko handle kar lega agar wo req.body mein aate hain.
         Object.assign(internship, req.body);
         const updatedInternship = await internship.save();
         res.json(updatedInternship);
