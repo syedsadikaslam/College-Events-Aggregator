@@ -16,7 +16,7 @@ app.set('trust proxy', 1);
 
 // CORS Config: Trailing slash remove kiya hai (http://localhost:5173/)
 app.use(cors({ 
-    origin: 'http://localhost:5173', 
+    origin: 'https://internxai.vercel.app', 
     credentials: true 
 })); 
 app.use(express.json());
