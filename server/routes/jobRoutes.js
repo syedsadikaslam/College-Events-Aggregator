@@ -15,8 +15,10 @@ router.post("/auto-fetch", async (req, res) => {
         tools: [{ googleSearch: {} }] 
     });
 
-    const prompt = `Search the internet for 1 real and active ${rawText} internship opening in January 2026. 
-        Return ONLY a raw JSON object. NO MARKDOWN, NO BACKTICKS.
+    const prompt = `Search for real ${rawText} internships for 2026. 
+        Return ONLY a single valid JSON object. 
+        If you find multiple, return ONLY the most relevant one.
+        Structure:
         {
           "role": "...",
           "company": "...",
@@ -25,27 +27,26 @@ router.post("/auto-fetch", async (req, res) => {
           "applyLink": "...",
           "description": "...",
           "lastDate": "..."
-        }
-        Role: ${rawText}`;
+        }`;
 
     const result = await model.generateContent(prompt);
     const response = await result.response;
     let text = response.text().trim();
 
-    // --- BULLETPROOF EXTRACTION ---
-    // 1. Pehle aur aakhri bracket dhoondhna
+    // --- STRATEGIC FIX FOR MULTIPLE JSON OBJECTS ---
+    // Hum pehla '{' dhoondhenge
     const startIdx = text.indexOf('{');
-    const lastIdx = text.lastIndexOf('}');
+    
+    // Aur hum pehla '}' dhoondhenge jo pehle '{' ke BAAD aata hai
+    // Yeh logic ensure karta hai ki humein sirf pehla complete object mile
+    let endIdx = text.indexOf('}', startIdx);
 
-    if (startIdx === -1 || lastIdx === -1) {
-        throw new Error("AI response did not contain JSON.");
+    if (startIdx === -1 || endIdx === -1) {
+        throw new Error("AI response did not contain a valid JSON object.");
     }
 
-    // 2. Sirf JSON block nikalna
-    let jsonString = text.substring(startIdx, lastIdx + 1);
-
-    // 3. CLEANING: Remove invisible control characters and extra spaces
-    jsonString = jsonString.replace(/[\u0000-\u001F\u007F-\u009F]/g, ""); 
+    // Sirf pehle object ko slice karna
+    let jsonString = text.substring(startIdx, endIdx + 1);
 
     try {
         const jobData = JSON.parse(jsonString);
@@ -56,20 +57,17 @@ router.post("/auto-fetch", async (req, res) => {
 
         res.status(200).json({ 
             success: true, 
-            message: `Premium Card Created for ${jobData.role}`, 
+            message: `Premium Card Created for ${jobData.company}`, 
             data: newJob 
         });
     } catch (parseError) {
         console.error("Parse Error Details:", jsonString);
-        throw new Error("AI generated bad JSON syntax.");
+        throw new Error("AI generated invalid JSON structure.");
     }
 
   } catch (error) {
     console.error("Gemini Route Error:", error.message);
-    res.status(500).json({ 
-        success: false, 
-        error: "Server Error: AI formatting failed. Try once more." 
-    });
+    res.status(500).json({ success: false, error: error.message });
   }
 });
 
