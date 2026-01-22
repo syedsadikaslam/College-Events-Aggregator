@@ -15,18 +15,22 @@ router.post("/auto-fetch", async (req, res) => {
         tools: [{ googleSearch: {} }] 
     });
 
-    const prompt = `Search the internet for 1 real and active ${rawText} internship opening in January 2026. 
-        Return ONLY a raw JSON object. NO MARKDOWN, NO BACKTICKS.
-        {
-          "role": "...",
-          "company": "...",
-          "stipend": "...",
-          "location": "...",
-          "applyLink": "...",
-          "description": "...",
-          "lastDate": "..."
-        }
-        Role: ${rawText}`;
+   const prompt = `Search the internet for real and active ${rawText} internship openings in January 2026. 
+    Return ONLY a valid JSON object. 
+    
+    CRITICAL INSTRUCTION: Rewrite the "description" in your own words. Do not copy-paste directly from websites to avoid recitation filters.
+    
+    Structure:
+    {
+      "role": "...",
+      "company": "...",
+      "stipend": "...",
+      "location": "...",
+      "applyLink": "...",
+      "description": "A professional 3-4 line summary rewritten by you including key skills.",
+      "lastDate": "..."
+    }
+    Target Role: ${rawText}`;
 
     const result = await model.generateContent(prompt);
     const response = await result.response;
