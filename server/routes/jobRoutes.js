@@ -15,41 +15,37 @@ router.post("/auto-fetch", async (req, res) => {
         tools: [{ googleSearch: {} }] 
     });
 
-   const prompt = `Search the internet for real and active ${rawText} internship openings in January 2026. 
-    Return ONLY a valid JSON object. 
-    
-    CRITICAL INSTRUCTION: Rewrite the "description" in your own words. Do not copy-paste directly from websites to avoid recitation filters.
-    
-    Structure:
-    {
-      "role": "...",
-      "company": "...",
-      "stipend": "...",
-      "location": "...",
-      "applyLink": "...",
-      "description": "A professional 3-4 line summary rewritten by you including key skills.",
-      "lastDate": "..."
-    }
-    Target Role: ${rawText}`;
+    const prompt = `Search for real ${rawText} internships for 2026. 
+        Return ONLY a single valid JSON object. 
+        If you find multiple, return ONLY the most relevant one.
+        Structure:
+        {
+          "role": "...",
+          "company": "...",
+          "stipend": "...",
+          "location": "...",
+          "applyLink": "...",
+          "description": "...",
+          "lastDate": "..."
+        }`;
 
     const result = await model.generateContent(prompt);
     const response = await result.response;
     let text = response.text().trim();
 
-    // --- BULLETPROOF EXTRACTION ---
-    // 1. Pehle aur aakhri bracket dhoondhna
+    // --- NEW MULTIPLE OBJECTS FIX ---
+    // Pehla '{' aur uske corresponding pehla '}' dhoondhna
     const startIdx = text.indexOf('{');
-    const lastIdx = text.lastIndexOf('}');
+    
+    // Logic: Hum pehle object ka end dhoondhenge jo pehle '{' ke baad aata hai
+    let endIdx = text.indexOf('}', startIdx);
 
-    if (startIdx === -1 || lastIdx === -1) {
+    if (startIdx === -1 || endIdx === -1) {
         throw new Error("AI response did not contain JSON.");
     }
 
-    // 2. Sirf JSON block nikalna
-    let jsonString = text.substring(startIdx, lastIdx + 1);
-
-    // 3. CLEANING: Remove invisible control characters and extra spaces
-    jsonString = jsonString.replace(/[\u0000-\u001F\u007F-\u009F]/g, ""); 
+    // Extracting just the FIRST object from the response
+    let jsonString = text.substring(startIdx, endIdx + 1);
 
     try {
         const jobData = JSON.parse(jsonString);
@@ -60,7 +56,7 @@ router.post("/auto-fetch", async (req, res) => {
 
         res.status(200).json({ 
             success: true, 
-            message: `Premium Card Created for ${jobData.role}`, 
+            message: `Premium Card Created for ${jobData.company}`, 
             data: newJob 
         });
     } catch (parseError) {
@@ -70,10 +66,7 @@ router.post("/auto-fetch", async (req, res) => {
 
   } catch (error) {
     console.error("Gemini Route Error:", error.message);
-    res.status(500).json({ 
-        success: false, 
-        error: "Server Error: AI formatting failed. Try once more." 
-    });
+    res.status(500).json({ success: false, error: error.message });
   }
 });
 
